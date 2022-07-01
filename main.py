@@ -1,37 +1,25 @@
-import pygame
+from vector import Vec2
+from sprite import Sprite
+from pygame_widgets.button import Button
+from level import *
+import pygame as pg
 from pygame.locals import *
 
-import pygame_widgets
-from pygame_widgets.button import Button
+INTERNAL_SIZE = (1920, 1080)
 
 
 class Window:
     def __init__(self, title):
-        pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-        pygame.display.set_caption(title)
-        self.clock = pygame.time.Clock()
+        pg.init()
+        self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
+        pg.display.set_caption(title)
+        self.clock = pg.time.Clock()
         self.running = False
-        self.button = Button(
-            # Mandatory Parameters
-            self.screen,  # Surface to place button on
-            100,  # X-coordinate of top left corner
-            100,  # Y-coordinate of top left corner
-            300,  # Width
-            150,  # Height
-
-            # Optional Parameters
-            text='Hello',  # Text to display
-            fontSize=50,  # Size of font
-            margin=20,  # Minimum distance between text/image and edge of button
-            # Colour of button when not being interacted with
-            inactiveColour=(200, 50, 0),
-            # Colour of button when being hovered over
-            hoverColour=(150, 0, 0),
-            pressedColour=(0, 200, 20),  # Colour of button when being clicked
-            radius=20,  # Radius of border corners (leave empty for not curved)
-            onClick=lambda: print('Click')  # Function to call when clicked on
-        )
+        self.root = LevelContainer()
+        self.root.change_level(MainMenu('menu', self.root))
+        self.game = Game(self.root)
+        self.sprite = Sprite.from_file(
+            Vec2(100, 100), "assets/main_char.png")  # TODO: Delete
 
     def start(self):
         self.running = True
@@ -41,7 +29,7 @@ class Window:
             self.draw()
 
     def process_events(self):
-        events = pygame.event.get()
+        events = pg.event.get()
         for event in events:
             if event.type == QUIT:
                 self.running = False
@@ -51,11 +39,57 @@ class Window:
                 if event.key == K_ESCAPE:
                     self.running = False
 
-        self.screen.fill((0, 0, 0))
-        pygame_widgets.update(events)
+        # Scale event positions to internal resolution
+        for event in events:
+            if 'pos' in event.dict:
+                event.pos = self.scale_pos(event.pos)
+
+        self.root.update(events)
 
     def draw(self):
-        pygame.display.update()
+        self.screen.fill((0, 0, 0))
+        surface = pg.Surface(INTERNAL_SIZE)
+        self.root.draw(surface)
+        self.sprite.draw(surface)
+        surface, pos = self.fit_surface(surface)
+        self.screen.blit(surface, pos)
+        pg.display.update()
+
+    def fit_surface(self, surface):
+        size, offset = self.fit_to(self.screen.get_size())
+        surface = pg.transform.scale(surface, size)
+        return surface, offset
+
+    def fit_to(self, res):
+        '''
+        Scales internal resolution to fit the screen resolution without stretching.
+        e.g. if screen is wider than internal resolution then height is fit and width is centered
+        '''
+        target_ratio = res[0]/res[1]
+        ratio = INTERNAL_SIZE[0]/INTERNAL_SIZE[1]
+
+        if target_ratio > ratio:
+            height = res[1]
+            width = height * ratio
+            x = (res[0] - width) // 2
+            y = 0
+        else:
+            width = res[0]
+            height = width / ratio
+            x = 0
+            y = (res[1] - height) // 2
+        return (int(width), int(height)), (int(x), int(y))
+
+    def scale_pos(self, pos):
+        '''
+        Scales position from screen resolution to internal resolution
+        '''
+        x, y = pos
+        size, offset = self.fit_to(self.screen.get_size())
+        scale = INTERNAL_SIZE[0]/size[0]
+        x = (x - offset[0]) * scale
+        y = (y - offset[1]) * scale
+        return int(x), int(y)
 
 
 window = Window("Epic Game")
