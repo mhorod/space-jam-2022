@@ -36,8 +36,11 @@ class Window:
                 if event.key == K_ESCAPE:
                     self.running = False
             elif event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.spr.on_click(event)  # TODO: Delete
+                self.spr.on_mouse_down(event)  # TODO: Delete
+            elif event.type == MOUSEBUTTONUP:
+                self.spr.on_mouse_up(event)  # TODO: Delete
+            elif event.type == MOUSEMOTION:
+                self.spr.on_motion(event)  # TODO: Delete
         self.screen.fill((50, 50, 50))
         pgw.update(events)
 
