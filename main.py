@@ -1,37 +1,22 @@
-import pygame
+import pygame as pg
 from pygame.locals import *
 
-import pygame_widgets
+import pygame_widgets as pgw
 from pygame_widgets.button import Button
+
+from sprite import Sprite
+from vector import Vec2
 
 
 class Window:
     def __init__(self, title):
-        pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-        pygame.display.set_caption(title)
-        self.clock = pygame.time.Clock()
+        pg.init()
+        self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
+        pg.display.set_caption(title)
+        self.clock = pg.time.Clock()
         self.running = False
-        self.button = Button(
-            # Mandatory Parameters
-            self.screen,  # Surface to place button on
-            100,  # X-coordinate of top left corner
-            100,  # Y-coordinate of top left corner
-            300,  # Width
-            150,  # Height
-
-            # Optional Parameters
-            text='Hello',  # Text to display
-            fontSize=50,  # Size of font
-            margin=20,  # Minimum distance between text/image and edge of button
-            # Colour of button when not being interacted with
-            inactiveColour=(200, 50, 0),
-            # Colour of button when being hovered over
-            hoverColour=(150, 0, 0),
-            pressedColour=(0, 200, 20),  # Colour of button when being clicked
-            radius=20,  # Radius of border corners (leave empty for not curved)
-            onClick=lambda: print('Click')  # Function to call when clicked on
-        )
+        self.spr = Sprite.from_file(
+            Vec2(100, 100), "assets/main_char.png")  # TODO: Delete
 
     def start(self):
         self.running = True
@@ -41,7 +26,7 @@ class Window:
             self.draw()
 
     def process_events(self):
-        events = pygame.event.get()
+        events = pg.event.get()
         for event in events:
             if event.type == QUIT:
                 self.running = False
@@ -50,12 +35,15 @@ class Window:
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
-
-        self.screen.fill((0, 0, 0))
-        pygame_widgets.update(events)
+            elif event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.spr.on_click(event)  # TODO: Delete
+        self.screen.fill((50, 50, 50))
+        pgw.update(events)
 
     def draw(self):
-        pygame.display.update()
+        self.spr.draw(self.screen)  # TODO: Delete
+        pg.display.update()
 
 
 window = Window("Epic Game")
