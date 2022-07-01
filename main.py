@@ -1,9 +1,8 @@
 from vector import Vec2
-from sprite import Sprite
-from pygame_widgets.button import Button
 from level import *
 import pygame as pg
 from pygame.locals import *
+from game import Game
 
 INTERNAL_SIZE = (1920, 1080)
 
@@ -18,8 +17,6 @@ class Window:
         self.root = LevelContainer()
         self.root.change_level(MainMenu('menu', self.root))
         self.game = Game(self.root)
-        self.sprite = Sprite.from_file(
-            Vec2(100, 100), "assets/main_char.png")  # TODO: Delete
 
     def start(self):
         self.running = True
@@ -38,19 +35,13 @@ class Window:
             elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     self.running = False
-
-        # Scale event positions to internal resolution
-        for event in events:
-            if 'pos' in event.dict:
-                event.pos = self.scale_pos(event.pos)
-
+        self.screen.fill((50, 50, 50))
         self.root.update(events)
 
     def draw(self):
         self.screen.fill((0, 0, 0))
         surface = pg.Surface(INTERNAL_SIZE)
         self.root.draw(surface)
-        self.sprite.draw(surface)
         surface, pos = self.fit_surface(surface)
         self.screen.blit(surface, pos)
         pg.display.update()

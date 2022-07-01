@@ -47,11 +47,18 @@ class Level(Drawable):
         self.background: pg.Surface = None
         self.objects = []
 
+    def exit(self):
+        self.parent.change_level(None)
+
     def append_child(self, child):
         self.objects.append(child)
 
+    def extend_children(self, children):
+        self.objects.extend(children)
+
     def draw(self, target: pg.Surface):
-        target.blit(self.background, (0, 0))
+        if self.background:
+            target.blit(self.background, (0, 0))
         for obj in self.objects:
             obj.draw(target)
 
@@ -63,12 +70,13 @@ class Level(Drawable):
 class Button(Drawable):
     def __init__(self, x, y, width, height, text, callback=lambda: None):
         self.surface = pg.Surface((width, height))
+        self.rect = pg.Rect(x, y, width, height)
         self.text = text
         self.pos = (x, y)
         self.callback = callback
 
     def draw(self, target: pg.Surface):
-        font = pg.font.SysFont('Arial', 20)
+        font = pg.font.SysFont('Arial', 40)
         text = font.render(self.text, True, (255, 255, 255))
         text_pos = (self.surface.get_width() // 2 - text.get_width() //
                     2, self.surface.get_height() // 2 - text.get_height() // 2)
@@ -79,7 +87,7 @@ class Button(Drawable):
         for event in events:
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == BUTTON_LEFT:
-                    if self.surface.get_rect().collidepoint(event.pos):
+                    if self.rect.collidepoint(event.pos):
                         self.callback()
 
 
@@ -88,11 +96,5 @@ class MainMenu(Level):
         super().__init__(*args, **kwargs)
         self.background = pg.Surface((0, 0))
         self.play_button = Button(
-            0, 0, 100, 50, 'Play', lambda: self.parent.change_level('game'))
+            100, 100, 100, 50, 'Play', lambda: self.parent.change_level('game'))
         self.append_child(self.play_button)
-
-
-class Game(Level):
-    def __init__(self, *args, **kwargs):
-        super().__init__('game', *args, **kwargs)
-        self.background = pg.image.load("assets/garden.png")
