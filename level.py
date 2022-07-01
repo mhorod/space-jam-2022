@@ -47,11 +47,18 @@ class Level(Drawable):
         self.background: pg.Surface = None
         self.objects = []
 
+    def exit(self):
+        self.parent.change_level(None)
+
     def append_child(self, child):
         self.objects.append(child)
 
+    def extend_children(self, children):
+        self.objects.extend(children)
+
     def draw(self, target: pg.Surface):
-        target.blit(self.background, (0, 0))
+        if self.background:
+            target.blit(self.background, (0, 0))
         for obj in self.objects:
             obj.draw(target)
 
@@ -91,9 +98,3 @@ class MainMenu(Level):
         self.play_button = Button(
             100, 100, 100, 50, 'Play', lambda: self.parent.change_level('game'))
         self.append_child(self.play_button)
-
-
-class Game(Level):
-    def __init__(self, *args, **kwargs):
-        super().__init__('game', *args, **kwargs)
-        self.background = pg.image.load("assets/garden.png")
