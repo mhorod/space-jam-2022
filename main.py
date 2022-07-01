@@ -1,21 +1,25 @@
-import pygame
-from pygame.locals import *
-
+from vector import Vec2
+from sprite import Sprite
+from pygame_widgets.button import Button
 from level import *
+import pygame as pg
+from pygame.locals import *
 
 INTERNAL_SIZE = (1920, 1080)
 
 
 class Window:
     def __init__(self, title):
-        pygame.init()
-        self.screen = pygame.display.set_mode((0, 0), FULLSCREEN)
-        pygame.display.set_caption(title)
-        self.clock = pygame.time.Clock()
+        pg.init()
+        self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
+        pg.display.set_caption(title)
+        self.clock = pg.time.Clock()
         self.running = False
         self.root = LevelContainer()
         self.root.change_level(MainMenu('menu', self.root))
         self.game = Game(self.root)
+        self.sprite = Sprite.from_file(
+            Vec2(100, 100), "assets/main_char.png")  # TODO: Delete
 
     def start(self):
         self.running = True
@@ -25,7 +29,7 @@ class Window:
             self.draw()
 
     def process_events(self):
-        events = pygame.event.get()
+        events = pg.event.get()
         for event in events:
             if event.type == QUIT:
                 self.running = False
@@ -44,15 +48,16 @@ class Window:
 
     def draw(self):
         self.screen.fill((0, 0, 0))
-        surface = pygame.Surface(INTERNAL_SIZE)
+        surface = pg.Surface(INTERNAL_SIZE)
         self.root.draw(surface)
+        self.sprite.draw(surface)
         surface, pos = self.fit_surface(surface)
         self.screen.blit(surface, pos)
-        pygame.display.update()
+        pg.display.update()
 
     def fit_surface(self, surface):
         size, offset = self.fit_to(self.screen.get_size())
-        surface = pygame.transform.scale(surface, size)
+        surface = pg.transform.scale(surface, size)
         return surface, offset
 
     def fit_to(self, res):
