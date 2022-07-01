@@ -5,37 +5,57 @@ from vector import Vec2
 
 
 class Sprite:
-    def __init__(self, position: Vec2, surface, callback=lambda: None):
+    def __init__(self, position, file_name, callback=lambda: None):
+        self.is_clicked = False
+        self.is_highlighted = False
+        self.surface = pg.image.load(file_name).convert_alpha()
         self.position = position
-        self.surface = surface
         self.callback = callback
-
-    def from_file(position: Vec2, file_name, callback=lambda: None):
-        surface = pg.image.load(file_name).convert_alpha()
-        position = position
-        return Sprite(position, surface, callback)
-
-    def draw(self, screen):
-        screen.blit(self.surface, self.position)
 
     def update(self, events):
         for event in events:
             if event.type == MOUSEBUTTONDOWN:
-                self.on_click(event)
+                self.on_mouse_down(event)
+            elif event.type == MOUSEBUTTONUP:
+                self.on_mouse_up(event)
+            elif event.type == MOUSEMOTION:
+                self.on_motion(event)
 
-    def is_clicked(self, on_screen):
-        on_image = on_screen - self.position
-        if not self.surface.get_rect().collidepoint(on_image):
+    def is_hovered(self, point):
+        on_image = point - self.position
+        if not self.surface.get_rect().collidepoint(on_image):  # Checks if point is within bounding box
             return False
-
         pixel = self.surface.get_at(on_image)
         alpha = pixel[3]
-        if alpha == 0:
-            return False
+        return alpha != 0
 
-        return True
-
-    def on_click(self, event):
+    def on_mouse_down(self, event):
         on_screen = Vec2.from_tuple(event.pos)
-        if self.is_clicked(on_screen):
+        if self.is_hovered(on_screen):
+            self.is_clicked = True
             self.callback()
+        else:
+            self.is_clicked = False
+
+    def on_mouse_up(self, event):
+        self.is_clicked = False
+
+    def on_motion(self, event):
+        on_screen = Vec2.from_tuple(event.pos)
+        if self.is_hovered(on_screen):
+            self.is_highlighted = True
+        else:
+            self.is_highlighted = False
+
+    def draw(self, screen):
+        if self.is_highlighted:
+            mask = pg.mask.from_surface(self.surface)
+            outline = mask.to_surface()
+            outline.set_colorkey((0, 0, 0))
+            offset = 2
+            screen.blit(outline, self.position + Vec2(offset, 0))
+            screen.blit(outline, self.position + Vec2(-offset, 0))
+            screen.blit(outline, self.position + Vec2(0, -offset))
+            screen.blit(outline, self.position + Vec2(0, offset))
+
+        screen.blit(self.surface, self.position)

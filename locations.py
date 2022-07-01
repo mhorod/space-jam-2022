@@ -18,7 +18,7 @@ class Location(Level):
         return f"assets/locations/{self.name}/{object_name}.png"
 
     def load_sprite(self, object_name):
-        return Sprite.from_file(Vec2(0, 0), self.path(object_name))
+        return Sprite(Vec2(0, 0), self.path(object_name))
 
     def load_sprites(self, names):
         return [self.load_sprite(name) for name in names]

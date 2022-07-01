@@ -30,12 +30,12 @@ class Window:
         for event in events:
             if event.type == QUIT:
                 self.running = False
-
-        # Scale event positions to internal resolution
-        for event in events:
-            if 'pos' in event.dict:
-                event.pos = self.scale_pos(event.pos)
-
+            elif event.type == VIDEORESIZE:
+                print(event.dict)
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    self.running = False
+        self.screen.fill((50, 50, 50))
         self.root.update(events)
 
     def draw(self):
