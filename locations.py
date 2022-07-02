@@ -1,11 +1,15 @@
 from location import *
+from memory import *
 
 
 class Garden(Location):
     def __init__(self, *args, **kwargs):
         super().__init__('garden', *args, **kwargs)
         self.objects = self.load_sprites(["bench", "duck", "gate", "path"])
-        self.load_closeups(('duck', 'bench'))
+        self.load_closeups(('bench',))
+        memory = Memory('pond_no_face', self)
+        self.sprites['duck'].callback = lambda: (
+            memory.start(), self.parent.change_level(memory))
 
 
 class Kitchen(Location):
