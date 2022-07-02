@@ -1,52 +1,34 @@
-import pygame as pg
-from pygame.locals import *
-
-from level import Level, LevelContainer
-from sprite import Sprite
-from vector import Vec2
-
-
-class Location(Level):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.background = self.load_image("background")
-
-    def load_image(self, object_name):
-        return pg.image.load(self.path(object_name))
-
-    def path(self, object_name):
-        return f"assets/locations/{self.name}/{object_name}.png"
-
-    def load_sprite(self, object_name):
-        return Sprite(Vec2(0, 0), self.path(object_name))
-
-    def load_sprites(self, names):
-        return [self.load_sprite(name) for name in names]
+from location import *
+from memory import *
 
 
 class Garden(Location):
     def __init__(self, *args, **kwargs):
         super().__init__('garden', *args, **kwargs)
         self.objects = self.load_sprites(["bench", "duck", "gate", "path"])
-        self.objects[0].callback = lambda: self.parent.change_level('bench')
-        self.objects[1].callback = lambda: self.parent.change_level('duck')
-        self.bench = CloseUp('bench', self)
-        self.bench = CloseUp('duck', self)
-        self.extend_children(self.objects)
+        self.load_closeups(('bench',))
+        memory = Memory('pond_no_face', self)
+        self.sprites['duck'].callback = lambda: (
+            memory.start(), self.parent.change_level(memory))
 
 
-class CloseUp(Location):
-    '''
-    Sublocation that is zoomed in on a specific object
-    '''
+class Kitchen(Location):
+    def __init__(self, *args, **kwargs):
+        super().__init__('kitchen', *args, **kwargs)
+        self.objects = self.load_sprites(
+            ["bin", "breadbox", "drawer", "fridge", "sink"])
+        self.load_closeups(('bin', 'breadbox', 'drawer', 'sink'))
 
-    def __init__(self, name, parent_location):
-        super().__init__(name, parent_location.parent)
-        self.parent_location = parent_location
 
-    def update(self, events: list):
-        for event in events:
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    print("Exiting")
-                    self.parent.change_level(self.parent_location)
+class Bedroom(Location):
+    def __init__(self, *args, **kwargs):
+        super().__init__('bedroom', *args, **kwargs)
+
+
+class MainMenu(Location):
+    def __init__(self, *args, **kwargs):
+        super().__init__('main_menu', *args, **kwargs)
+        self.objects = self.load_sprites(["play", "exit"])
+        self.sprites['play'].callback = lambda: self.parent.change_level(
+            'game')
+        self.sprites['exit'].callback = lambda: self.parent.quit()
