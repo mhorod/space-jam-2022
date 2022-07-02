@@ -2,15 +2,16 @@ import pygame as pg
 from pygame.locals import *
 
 from vector import Vec2
+from assets import Assets
 
 
 class Sprite:
     def __init__(self, position, file_name, callback=lambda: None):
         self.is_clicked = False
         self.is_highlighted = False
-        self.surface = pg.image.load(file_name).convert_alpha()
+        self.surface = Assets.files[file_name]
         self.position = position
-        self.outline = self.calculate_outline()
+        self.recalculate_outline()
         self.callback = callback
 
     def update(self, events):
@@ -66,3 +67,6 @@ class Sprite:
         screen.blit(outline, self.position + Vec2(0, -offset))
         screen.blit(outline, self.position + Vec2(0, offset))
         return screen
+
+    def recalculate_outline(self):
+        self.outline = self.calculate_outline()

@@ -38,3 +38,6 @@ class Vec2:
 
     def int(self):
         return self.map(int)
+
+    def __repr__(self):
+        return f"[{self.x}, {self.y}]"

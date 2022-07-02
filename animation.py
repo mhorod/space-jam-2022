@@ -51,7 +51,7 @@ class TransitionAnimation:
                     pg.image.load("assets/transitions/r2.png"),
                     pg.image.load("assets/transitions/r3.png")
                 ],
-                10,
+                20,
                 2,
                 Vec2(0, 0), Vec2(1920, 0), False, (0, 0, 0, 255)
             )
