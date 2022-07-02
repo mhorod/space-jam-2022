@@ -5,6 +5,8 @@ from level import Level
 from sprite import Sprite
 from vector import Vec2
 
+from assets import Assets
+
 import copy
 
 
@@ -16,7 +18,7 @@ class Location(Level):
         self.close_ups = {}
 
     def load_image(self, object_name):
-        return pg.image.load(self.path(object_name))
+        return Assets.files[self.path(object_name)]
 
     def path(self, object_name):
         return f"assets/locations/{self.name}/{object_name}.png"
