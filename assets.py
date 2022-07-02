@@ -12,6 +12,5 @@ class Assets:
                 files_to_load.append(os.path.join(root, name))
 
         for index, file in enumerate(files_to_load):
-            print(file)
-            Assets.files[file] = pg.image.load(file).convert()
+            Assets.files[file] = pg.image.load(file).convert_alpha()
             callback(index, len(files_to_load))

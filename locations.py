@@ -27,9 +27,9 @@ class Bedroom(Location):
 
 
 class MainMenu(Location):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, hud, *args, **kwargs):
         super().__init__('main_menu', *args, **kwargs)
         self.objects = self.load_sprites(["play", "exit"])
-        self.sprites['play'].callback = lambda: self.parent.change_level(
-            'game')
+        self.sprites['play'].callback = lambda: (hud.show(), self.parent.change_level(
+            'game'))
         self.sprites['exit'].callback = lambda: self.parent.quit()
