@@ -1,5 +1,7 @@
 import pygame as pg
 from pygame.locals import *
+from animation import TransitionAnimation
+from vector import Vec2
 
 
 class Drawable:
@@ -24,14 +26,27 @@ class LevelContainer(Drawable):
     def __init__(self):
         self.level = None
 
-    def change_level(self, level):
+        self.possible_animations = TransitionAnimation.load_animations()
+
+    def __load_new_level(self, level):
         if type(level) == str:
             level = Levels.levels[level]
         self.level = level
 
+    def change_level(self, level, animation_type=TransitionAnimation.AnimEnum.swipe):
+        if animation_type == None:
+            self.__load_new_level(level)
+        else:
+            self.animation = self.possible_animations[animation_type]
+            self.animation.start(level, self.__load_new_level)
+
     def draw(self, surface):
         if self.level:
             self.level.draw(surface)
+
+        if self.animation.is_animating:
+            self.animation.draw(surface)
+            self.animation.update_animation()
 
     def update(self, events):
         if self.level:
