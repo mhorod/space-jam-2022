@@ -23,3 +23,8 @@ class Memory(Level):
             self.parent.change_level(
                 self.parent_location, TransitionAnimation.AnimEnum.fade)
             self.parent.hud.show()
+
+
+class Memories:
+    def load_memories():
+        pass

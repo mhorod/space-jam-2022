@@ -31,6 +31,12 @@ class Inventory:
         self.surface = Assets.files["assets/ui/inventory.png"]
         self.item_surface = pg.Surface((500, 1080)).convert_alpha()
 
+    def add_item(self, item):
+        pass
+
+    def remove_item(self, item):
+        pass
+
     def update(self, events):
         transform = Transform([Translate(Vec2(1420, 0))])
         events.transform = transform.and_then(events.transform)

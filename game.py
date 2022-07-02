@@ -1,24 +1,29 @@
-from level import Level, Levels, LevelContainer
+
 from locations import *
 
 
-class Game(LevelContainer):
-    def __init__(self, hud):
-        super().__init__()
-        self.hud = hud
-        Levels.add('game', self)
-        self.index = 0
-        self.levels = [Garden(
-            self), Kitchen(self), Bedroom(self)]
-        self.change_level(self.levels[self.index])
+class Game:
+    '''
+    Logical game - manages interaction between world objects
+    '''
 
-    def update(self, events):
-        super().update(events)
-        for event in events:
-            if event.type == KEYDOWN:
-                if event.key == K_LEFT:
-                    self.index = (self.index - 1) % len(self.levels)
-                    self.change_level(self.levels[self.index])
-                elif event.key == K_RIGHT:
-                    self.index = (self.index + 1) % len(self.levels)
-                    self.change_level(self.levels[self.index])
+    def __init__(self, inventory):
+        self.inventory = inventory
+        self.location = None
+        self.view = None
+        self.locations = [Bedroom(), Garden(), Kitchen()]
+
+    def take_item(self, item):
+        self.location.take_item(item)
+        self.inventory.add_item(item)
+
+    def use_item(self, item):
+        result = self.location.use_item(item)
+        result.apply(self)
+
+    def change_location(self, location):
+        self.location = location
+        self.view.change_location(location)
+
+    def trigger_memory(self, memory_name):
+        self.view.trigger_memory(memory_name)
