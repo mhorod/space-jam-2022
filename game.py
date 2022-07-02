@@ -22,6 +22,11 @@ class Game:
         result.apply(self)
 
     def change_location(self, location):
+        if type(location) == str:
+            for l in self.locations:
+                if l.name == location:
+                    location = l
+                    break
         self.location = location
         self.view.change_location(location)
 

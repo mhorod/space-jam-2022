@@ -9,7 +9,8 @@ class Garden(Location):
     def __init__(self):
         objects = ['bench', 'duck', 'gate', 'path']
         locations = [Bench(), Duck()]
-        super().__init__('garden', objects, locations)
+        doors = [('path', 'kitchen')]
+        super().__init__('garden', objects, locations, doors=doors)
 
 
 class Bench(Location):
@@ -42,7 +43,8 @@ class Kitchen(Location):
         objects = ["bin", "breadbox", "sink", "kitchen_drawer",
                    "freezer", "floorboards", "kitchen_doors"]
         locations = [KitchenDrawer(), Floorboards(), Freezer(), BreadBox()]
-        super().__init__('kitchen', objects, locations)
+        doors = [("kitchen_doors", 'garden')]
+        super().__init__('kitchen', objects, locations, doors=doors)
 
 
 class KitchenDrawer(Location):

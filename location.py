@@ -17,11 +17,12 @@ class Location:
     Logical part of the location - represents an area where things can be
     '''
 
-    def __init__(self, name, objects=None, locations=None, items=None):
+    def __init__(self, name, objects=None, locations=None, items=None, doors=[]):
         self.name = name
         self.objects = objects or []
         self.items = items or []
         self.locations = locations or []
+        self.doors = doors or []
         self.view = None
 
     def take_item(self, item):
@@ -50,6 +51,8 @@ class LocationView(Level):
         self.location = location
         self.objects = self.load_sprites(location.objects)
         self.load_closeups(location.locations)
+        self.connect_doors(location.doors)
+
         location.view = self
 
     def load_image(self, object_name):
@@ -74,6 +77,11 @@ class LocationView(Level):
             self.close_ups[location.name] = CloseUp(self, location)
             self.sprites[location.name].callback =\
                 (lambda l: lambda: self.parent.game.change_location(l))(location)
+
+    def connect_doors(self, doors):
+        for name, dest in doors:
+            self.sprites[name].callback = lambda: self.parent.game.change_location(
+                dest)
 
 
 class CloseUp(LocationView):
