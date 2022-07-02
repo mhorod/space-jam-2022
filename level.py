@@ -37,6 +37,10 @@ class LevelContainer(Drawable):
         if self.level:
             self.level.update(events)
 
+    def quit(self):
+        pg.quit()
+        quit()
+
 
 class Level(Drawable):
     def __init__(self, name, parent: LevelContainer):
@@ -65,36 +69,3 @@ class Level(Drawable):
     def update(self, events: list):
         for obj in self.objects:
             obj.update(events)
-
-
-class Button(Drawable):
-    def __init__(self, x, y, width, height, text, callback=lambda: None):
-        self.surface = pg.Surface((width, height))
-        self.rect = pg.Rect(x, y, width, height)
-        self.text = text
-        self.pos = (x, y)
-        self.callback = callback
-
-    def draw(self, target: pg.Surface):
-        font = pg.font.SysFont('Arial', 40)
-        text = font.render(self.text, True, (255, 255, 255))
-        text_pos = (self.surface.get_width() // 2 - text.get_width() //
-                    2, self.surface.get_height() // 2 - text.get_height() // 2)
-        self.surface.blit(text, text_pos)
-        target.blit(self.surface, self.pos)
-
-    def update(self, events: list):
-        for event in events:
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == BUTTON_LEFT:
-                    if self.rect.collidepoint(event.pos):
-                        self.callback()
-
-
-class MainMenu(Level):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.background = pg.Surface((0, 0))
-        self.play_button = Button(
-            100, 100, 100, 50, 'Play', lambda: self.parent.change_level('game'))
-        self.append_child(self.play_button)

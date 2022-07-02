@@ -6,7 +6,7 @@ class Game(LevelContainer):
     def __init__(self, *args, **kwargs):
         Levels.add('game', self)
         self.index = 0
-        self.levels = [MainMenu(self), Garden(
+        self.levels = [Garden(
             self), Kitchen(self), Bedroom(self)]
         self.change_level(self.levels[self.index])
 

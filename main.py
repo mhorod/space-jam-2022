@@ -5,6 +5,7 @@ from pygame.locals import *
 from game import Game
 from transform import *
 from events import Events
+from locations import *
 
 INTERNAL_SIZE = (1920, 1080)
 
@@ -14,11 +15,24 @@ class Window:
         pg.init()
         self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
         pg.display.set_caption(title)
+        self.draw_loading()
         self.clock = pg.time.Clock()
         self.running = False
         self.root = LevelContainer()
-        self.root.change_level(MainMenu('menu', self.root))
         self.game = Game(self.root)
+        self.root.change_level(MainMenu(self.root))
+
+    def draw_loading(self):
+        self.screen.fill((0, 0, 0))
+        surface = pg.Surface(INTERNAL_SIZE)
+        surface.fill((0, 0, 0))
+        text = pg.font.SysFont('Arial', 100).render(
+            'Loading...', True, (255, 255, 255))
+        surface.blit(text, (INTERNAL_SIZE[0]//2 - text.get_width() //
+                     2, INTERNAL_SIZE[1]//2 - text.get_height()//2))
+        surface, pos = self.fit_surface(surface)
+        self.screen.blit(surface, pos)
+        pg.display.update()
 
     def start(self):
         self.running = True
