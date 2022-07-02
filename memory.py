@@ -3,6 +3,7 @@ from level import Level
 
 import time
 from assets import Assets
+from animation import *
 
 
 class Memory(Level):
@@ -18,4 +19,5 @@ class Memory(Level):
 
     def update(self, events):
         if time.time() - self.time > 3:
-            self.parent.change_level(self.parent_location)
+            self.parent.change_level(
+                self.parent_location, TransitionAnimation.AnimEnum.fade)

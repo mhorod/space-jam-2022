@@ -3,7 +3,8 @@ from locations import *
 
 
 class Game(LevelContainer):
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
+        super().__init__()
         Levels.add('game', self)
         self.index = 0
         self.levels = [Garden(
