@@ -16,8 +16,15 @@ class Memory(Level):
 
     def start(self):
         self.time = time.time()
+        self.parent.hud.hide()
 
     def update(self, events):
         if time.time() - self.time > 3:
             self.parent.change_level(
                 self.parent_location, TransitionAnimation.AnimEnum.fade)
+            self.parent.hud.show()
+
+
+class Memories:
+    def load_memories():
+        pass

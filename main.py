@@ -1,12 +1,17 @@
-from vector import Vec2
-from level import *
 import pygame as pg
 from pygame.locals import *
-from game import Game
+
+from vector import Vec2
+from level import *
+
 from transform import *
 from events import Events
 from locations import *
 from assets import *
+from inventory import Inventory
+
+from game import Game
+from game_view import GameView
 
 INTERNAL_SIZE = (1920, 1080)
 
@@ -16,14 +21,27 @@ class HUD:
         self.surface = pg.Surface(INTERNAL_SIZE).convert_alpha()
         self.open_inventory = Sprite(
             Vec2(0, 0), "assets/ui/open_inventory.png")
+        self.inventory = Inventory()
+        self.open_inventory.callback = lambda: self.inventory.toggle()
+        self.shown = False
+
+    def hide(self):
+        self.shown = False
+
+    def show(self):
+        self.shown = True
 
     def draw(self, surface):
-        self.surface.fill((0, 0, 0, 0))
-        self.open_inventory.draw(self.surface)
-        surface.blit(self.surface, (0, 0))
+        if self.shown:
+            self.surface.fill((0, 0, 0, 0))
+            self.inventory.draw(self.surface)
+            self.open_inventory.draw(self.surface)
+            surface.blit(self.surface, (0, 0))
 
     def update(self, events):
-        self.open_inventory.update(events)
+        if self.shown:
+            self.open_inventory.update(events)
+            self.inventory.update(events)
 
 
 class Window:
@@ -31,20 +49,21 @@ class Window:
         pg.init()
         self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
         pg.display.set_caption(title)
-
         self.load_assets()
-
         self.clock = pg.time.Clock()
         self.running = False
+
         self.root = LevelContainer()
         self.hud = HUD()
-        self.game = Game()
+
+        self.game = Game(self.hud.inventory)
+        self.game_view = GameView(self.game, self.hud)
+
         self.root.change_level(MainMenu(self.root))
 
         self.game_surface = pg.Surface(INTERNAL_SIZE)
 
     def load_assets(self):
-
         w = self.screen.get_width() // 2
         h = 20
         x = (self.screen.get_width() - w) // 2
