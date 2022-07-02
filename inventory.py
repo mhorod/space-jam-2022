@@ -8,6 +8,20 @@ from transform import *
 class Item(Sprite):
     def __init__(self, name):
         super().__init__(Vec2(0, 0), Item.path(name))
+        self._surface = self.surface.copy()
+        self.name = name
+
+    def path(name):
+        return f"assets/items/{name}.png"
+
+    def take_from_inventory(self):
+        w, h = self.surface.get_size()
+        x = (1920 - w) // 2
+        y = (1080 - h) // 2
+        self.position = Vec2(x, y)
+        pass
+
+    def put_into_inventory(self):
         w, h = self.surface.get_size()
         S = 200
         if w >= h:
@@ -17,10 +31,6 @@ class Item(Sprite):
 
         self.surface = pg.transform.scale(self.surface, (w, h))
         self.recalculate_outline()
-        self.name = name
-
-    def path(name):
-        return f"assets/items/{name}.png"
 
 
 class Inventory:
@@ -29,12 +39,12 @@ class Inventory:
         self.game.inventory = self
 
         self.items = []
-        self.add_item(Item('bread'))
         self.is_open = False
         self.surface = Assets.files["assets/ui/inventory.png"]
         self.item_surface = pg.Surface((500, 1080)).convert_alpha()
 
     def add_item(self, item):
+        item.put_into_inventory()
         index = len(self.items)
         y = (index // 2) * 200 + 100
         x = (index % 2) * 200 + 100

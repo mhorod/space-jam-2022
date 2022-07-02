@@ -29,6 +29,7 @@ class Location:
         '''
         Take item from this location
         '''
+        self.view.remove_item(item)
         return Nothing()
 
     def use_item(self, item):
@@ -50,6 +51,12 @@ class LocationView(Level):
         self.close_ups = {}
         self.location = location
         self.objects = self.load_sprites(location.objects)
+        self.items = location.items
+        for item in self.items:
+            self.append_child(item)
+            item.take_from_inventory()
+            item.callback = lambda: self.parent.game.take_item(item)
+
         self.load_closeups(location.locations)
         self.connect_doors(location.doors)
 
@@ -82,6 +89,9 @@ class LocationView(Level):
         for name, dest in doors:
             self.sprites[name].callback = lambda: self.parent.game.change_location(
                 dest)
+
+    def remove_item(self, item):
+        self.objects.remove(item)
 
 
 class CloseUp(LocationView):
