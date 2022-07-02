@@ -11,6 +11,9 @@ class Drawable:
     def update(self, events: list):
         pass
 
+    def on_load(self):
+        pass
+
 
 class Levels:
     levels = {}
@@ -32,6 +35,7 @@ class LevelContainer(Drawable):
         if type(level) == str:
             level = Levels.levels[level]
         self.level = level
+        self.level.on_load()
 
     def change_level(self, level, animation_type=TransitionAnimation.AnimEnum.swipe):
         if animation_type == None:

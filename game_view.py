@@ -20,7 +20,11 @@ class GameView(LevelContainer):
         self.index = 0
         self.levels = [LocationView(self, location)
                        for location in self.game.locations]
+
         self.change_level(self.levels[self.index])
+
+    def on_load(self):
+        self.game.start()
 
     def update(self, events):
         super().update(events)

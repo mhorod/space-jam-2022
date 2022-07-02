@@ -27,7 +27,7 @@ class Duck(Location):
 
     def use_item(self, item):
         if item.name == 'bread':
-            return TriggerMemory('pond_no_face')
+            return ComposedUseResult([TriggerMemory('pond_no_face'), ConsumeItem(item)])
         else:
             return Nothing()
 

@@ -13,8 +13,17 @@ class TriggerMemory:
 
 
 class ConsumeItem:
-    def __init__(self, item_name):
-        self.item_name = item_name
+    def __init__(self, item):
+        self.item = item
 
     def apply(self, game):
-        game.inventory.remove_item(self.item_name)
+        game.inventory.remove_item(self.item)
+
+
+class ComposedUseResult:
+    def __init__(self, results):
+        self.results = results
+
+    def apply(self, game):
+        for result in self.results:
+            result.apply(game)

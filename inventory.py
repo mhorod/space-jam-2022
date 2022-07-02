@@ -24,11 +24,34 @@ class Item(Sprite):
 
 
 class Inventory:
-    def __init__(self):
-        self.items = [Item('bread')]
+    def __init__(self, game):
+        self.game = game
+        self.game.inventory = self
+
+        self.items = []
+        self.add_item(Item('bread'))
         self.is_open = False
         self.surface = Assets.files["assets/ui/inventory.png"]
         self.item_surface = pg.Surface((500, 1080)).convert_alpha()
+
+    def add_item(self, item):
+        index = len(self.items)
+        y = (index // 2) * 200 + 100
+        x = (index % 2) * 200 + 100
+        item.position = Vec2(x, y)
+        item.callback = lambda: self.game.use_item(item)
+        self.items.append(item)
+
+    def remove_item(self, item):
+        self.items.remove(item)
+        print(self.items, item)
+
+    def place_items(self):
+        for index, item in enumerate(self.items):
+            index = len(self.items)
+            y = (index // 2) * 200 + 100
+            x = (index % 2) * 200 + 100
+            item.position = Vec2(x, y)
 
     def update(self, events):
         transform = Transform([Translate(Vec2(1420, 0))])
@@ -42,9 +65,6 @@ class Inventory:
             self.item_surface.fill((0, 0, 0, 0))
 
             for index, item in enumerate(self.items):
-                y = (index // 2) * 200 + 100
-                x = (index % 2) * 200 + 100
-                item.position = Vec2(x, y)
                 item.draw(self.item_surface)
 
             target.blit(self.item_surface, (1420, 0))

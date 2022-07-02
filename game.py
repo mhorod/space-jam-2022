@@ -7,8 +7,8 @@ class Game:
     Logical game - manages interaction between world objects
     '''
 
-    def __init__(self, inventory):
-        self.inventory = inventory
+    def __init__(self):
+        self.inventory = None
         self.location = None
         self.view = None
         self.locations = [Bedroom(), Garden(), Kitchen()]
@@ -27,3 +27,6 @@ class Game:
 
     def trigger_memory(self, memory_name):
         self.view.trigger_memory(memory_name)
+
+    def start(self):
+        self.change_location(self.locations[0])

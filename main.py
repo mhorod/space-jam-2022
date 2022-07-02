@@ -17,11 +17,11 @@ INTERNAL_SIZE = (1920, 1080)
 
 
 class HUD:
-    def __init__(self):
+    def __init__(self, inventory):
         self.surface = pg.Surface(INTERNAL_SIZE).convert_alpha()
         self.open_inventory = Sprite(
             Vec2(0, 0), "assets/ui/open_inventory.png")
-        self.inventory = Inventory()
+        self.inventory = inventory
         self.open_inventory.callback = lambda: self.inventory.toggle()
         self.shown = False
 
@@ -54,9 +54,13 @@ class Window:
         self.running = False
 
         self.root = LevelContainer()
-        self.hud = HUD()
 
-        self.game = Game(self.hud.inventory)
+        self.game = Game()
+
+        self.inventory = Inventory(self.game)
+        self.hud = HUD(self.inventory)
+        self.hud.show()
+
         self.game_view = GameView(self.game, self.hud)
 
         self.root.change_level(MainMenu(self.root))

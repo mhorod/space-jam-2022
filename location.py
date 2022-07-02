@@ -9,6 +9,8 @@ from assets import Assets
 
 import copy
 
+from use_result import *
+
 
 class Location:
     '''
@@ -26,13 +28,13 @@ class Location:
         '''
         Take item from this location
         '''
-        pass
+        return Nothing()
 
     def use_item(self, item):
         '''
         Use item in this location
         '''
-        pass
+        return Nothing()
 
 
 class LocationView(Level):
@@ -71,7 +73,7 @@ class LocationView(Level):
         for location in locations:
             self.close_ups[location.name] = CloseUp(self, location)
             self.sprites[location.name].callback =\
-                (lambda l: lambda: self.parent.change_location(l))(location)
+                (lambda l: lambda: self.parent.game.change_location(l))(location)
 
 
 class CloseUp(LocationView):
