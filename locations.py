@@ -48,5 +48,4 @@ class CloseUp(Location):
         for event in events:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
-                    print("Exiting")
                     self.parent.change_level(self.parent_location)
