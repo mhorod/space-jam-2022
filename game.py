@@ -1,9 +1,22 @@
-from level import Level
-from locations import Garden
+from level import Level, Levels, LevelContainer
+from locations import *
 
 
-class Game(Level):
+class Game(LevelContainer):
     def __init__(self, *args, **kwargs):
-        super().__init__('game', *args, **kwargs)
-        self.garden = Garden(self.parent)
-        self.append_child(self.garden)
+        Levels.add('game', self)
+        self.index = 0
+        self.levels = [MainMenu(self), Garden(
+            self), Kitchen(self), Bedroom(self)]
+        self.change_level(self.levels[self.index])
+
+    def update(self, events):
+        super().update(events)
+        for event in events:
+            if event.type == KEYDOWN:
+                if event.key == K_LEFT:
+                    self.index = (self.index - 1) % len(self.levels)
+                elif event.key == K_RIGHT:
+                    self.index = (self.index + 1) % len(self.levels)
+
+                self.change_level(self.levels[self.index])
