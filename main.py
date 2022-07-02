@@ -33,7 +33,6 @@ class Window:
             if event.type == QUIT:
                 self.running = False
 
-        self.screen.fill((50, 50, 50))
         self.root.update(Events(events, self.current_transform()))
 
     def draw(self):
