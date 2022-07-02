@@ -2,9 +2,24 @@
 
 ## Team: ksisiamisiabela
 
+- Izabela Kręc
+- Dominika Gwóźdź
+- Krzysztof Pęczek
+- Michał Horodecki
+
 # Installation
 
-TODO
+Python and pygame are required to run the game.
+
+```
+pip3 install -r requirements.txt
+```
+
+# Gameplay
+
+This is a point-and-click game - you explore the world by clicking at the
+environment. Additionally you can change locations by pressing left and right
+arrows.
 
 # Development
 
