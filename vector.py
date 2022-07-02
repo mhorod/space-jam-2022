@@ -23,3 +23,18 @@ class Vec2:
 
     def __sub__(self, u):
         return Vec2(self.x - u.x, self.y - u.y)
+
+    def __mul__(self, u):
+        return Vec2(self.x * u, self.y * u)
+
+    def __truediv__(self, u):
+        return Vec2(self.x / u, self.y / u)
+
+    def __neg__(self):
+        return Vec2(-self.x, -self.y)
+
+    def map(self, f):
+        return Vec2(f(self.x), f(self.y))
+
+    def int(self):
+        return self.map(int)

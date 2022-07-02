@@ -3,6 +3,8 @@ from level import *
 import pygame as pg
 from pygame.locals import *
 from game import Game
+from transform import *
+from events import Events
 
 INTERNAL_SIZE = (1920, 1080)
 
@@ -30,13 +32,9 @@ class Window:
         for event in events:
             if event.type == QUIT:
                 self.running = False
-            elif event.type == VIDEORESIZE:
-                print(event.dict)
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    self.running = False
+
         self.screen.fill((50, 50, 50))
-        self.root.update(events)
+        self.root.update(Events(events, self.current_transform()))
 
     def draw(self):
         self.screen.fill((0, 0, 0))
@@ -70,6 +68,14 @@ class Window:
             x = 0
             y = (res[1] - height) // 2
         return (int(width), int(height)), (int(x), int(y))
+
+    def current_transform(self):
+        '''
+        Returns current transform matrix for internal resolution
+        '''
+        size, offset = self.fit_to(self.screen.get_size())
+        scale = size[0]/INTERNAL_SIZE[0]
+        return Transform([Scale(scale), Translate(Vec2(*offset))])
 
     def scale_pos(self, pos):
         '''
