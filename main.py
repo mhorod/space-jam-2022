@@ -5,6 +5,9 @@ from pygame.locals import *
 from game import Game
 from transform import *
 from events import Events
+from locations import *
+
+from assets import *
 
 INTERNAL_SIZE = (1920, 1080)
 
@@ -14,11 +17,43 @@ class Window:
         pg.init()
         self.screen = pg.display.set_mode((0, 0), FULLSCREEN)
         pg.display.set_caption(title)
+
+        self.load_assets()
+
         self.clock = pg.time.Clock()
         self.running = False
         self.root = LevelContainer()
-        self.root.change_level(MainMenu('menu', self.root))
         self.game = Game(self.root)
+        self.root.change_level(MainMenu(self.root))
+
+        self.game_surface = pg.Surface(INTERNAL_SIZE)
+
+    def load_assets(self):
+
+        w = self.screen.get_width() // 2
+        h = 20
+        x = (self.screen.get_width() - w) // 2
+
+        def update_loading(done, total):
+            self.screen.fill((20, 20, 20))
+            percentage = done/total
+            text = pg.font.SysFont("Arial", 100).render(
+                f"Loading... {done}/{total}", True, (255, 255, 255))
+
+            text_x = (self.screen.get_width() - text.get_width()) // 2
+            text_y = (self.screen.get_height() - text.get_height()) // 2
+
+            y = text_y + text.get_height() + h
+
+            self.screen.blit(text, (text_x, text_y))
+            pg.draw.rect(self.screen, (255, 255, 255), (x, y, w, h), 1)
+            pg.draw.rect(self.screen, (40, 240, 60),
+                         (x, y, int(w * percentage), h))
+            pg.display.flip()
+
+            pg.display.update()
+
+        Assets.load_assets(update_loading)
 
     def start(self):
         self.running = True
@@ -37,9 +72,9 @@ class Window:
 
     def draw(self):
         self.screen.fill((0, 0, 0))
-        surface = pg.Surface(INTERNAL_SIZE)
-        self.root.draw(surface)
-        surface, pos = self.fit_surface(surface)
+        self.game_surface.fill((0, 0, 0))
+        self.root.draw(self.game_surface)
+        surface, pos = self.fit_surface(self.game_surface)
         self.screen.blit(surface, pos)
         pg.display.update()
 
