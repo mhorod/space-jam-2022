@@ -6,10 +6,24 @@ from game import Game
 from transform import *
 from events import Events
 from locations import *
-
 from assets import *
 
 INTERNAL_SIZE = (1920, 1080)
+
+
+class HUD:
+    def __init__(self):
+        self.surface = pg.Surface(INTERNAL_SIZE).convert_alpha()
+        self.open_inventory = Sprite(
+            Vec2(0, 0), "assets/ui/open_inventory.png")
+
+    def draw(self, surface):
+        self.surface.fill((0, 0, 0, 0))
+        self.open_inventory.draw(self.surface)
+        surface.blit(self.surface, (0, 0))
+
+    def update(self, events):
+        self.open_inventory.update(events)
 
 
 class Window:
@@ -23,6 +37,7 @@ class Window:
         self.clock = pg.time.Clock()
         self.running = False
         self.root = LevelContainer()
+        self.hud = HUD()
         self.game = Game(self.root)
         self.root.change_level(MainMenu(self.root))
 
@@ -68,12 +83,17 @@ class Window:
             if event.type == QUIT:
                 self.running = False
 
-        self.root.update(Events(events, self.current_transform()))
+        events = Events(events, self.current_transform())
+        self.root.update(events)
+        self.hud.update(events)
 
     def draw(self):
         self.screen.fill((0, 0, 0))
         self.game_surface.fill((0, 0, 0))
+
         self.root.draw(self.game_surface)
+        self.hud.draw(self.game_surface)
+
         surface, pos = self.fit_surface(self.game_surface)
         self.screen.blit(surface, pos)
         pg.display.update()
