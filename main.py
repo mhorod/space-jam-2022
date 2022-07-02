@@ -38,7 +38,7 @@ class Window:
         self.running = False
         self.root = LevelContainer()
         self.hud = HUD()
-        self.game = Game(self.root)
+        self.game = Game()
         self.root.change_level(MainMenu(self.root))
 
         self.game_surface = pg.Surface(INTERNAL_SIZE)

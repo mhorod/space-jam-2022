@@ -1,5 +1,6 @@
 from location import *
 from memory import *
+from animation import *
 
 
 class Garden(Location):
@@ -9,7 +10,7 @@ class Garden(Location):
         self.load_closeups(('bench',))
         memory = Memory('pond_no_face', self)
         self.sprites['duck'].callback = lambda: (
-            memory.start(), self.parent.change_level(memory))
+            memory.start(), self.parent.change_level(memory, TransitionAnimation.AnimEnum.fade))
 
 
 class Kitchen(Location):
