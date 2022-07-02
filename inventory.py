@@ -6,8 +6,8 @@ from transform import *
 
 
 class Item(Sprite):
-    def __init__(self, name, position):
-        super().__init__(position, Item.path(name))
+    def __init__(self, name):
+        super().__init__(Vec2(0, 0), Item.path(name))
         w, h = self.surface.get_size()
         S = 200
         if w >= h:
@@ -25,8 +25,7 @@ class Item(Sprite):
 
 class Inventory:
     def __init__(self):
-        self.items = [Item('bread', Vec2(0, 0)), Item(
-            'dress', Vec2(0, 0)), Item('key', Vec2(0, 0))]
+        self.items = [Item('bread')]
         self.is_open = False
         self.surface = Assets.files["assets/ui/inventory.png"]
         self.item_surface = pg.Surface((500, 1080)).convert_alpha()

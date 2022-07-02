@@ -1,116 +1,94 @@
 from location import *
 from memory import *
 from animation import *
+from use_result import *
+from inventory import *
 
 
 class Garden(Location):
-    def __init__(self, *args, **kwargs):
-        super().__init__('garden', *args, **kwargs)
-        self.objects = self.load_sprites(["bench", "duck", "gate", "path"])
-        bench = Bench(self)
-        self.sprites['bench'].callback = lambda: self.parent.change_level(
-            'bench', TransitionAnimation.AnimEnum.swipe)
-
-        self.sprites['path'].callback = lambda: self.parent.change_level(
-            'kitchen', TransitionAnimation.AnimEnum.swipe
-        )
-
-        memory = Memory('pond_no_face', self)
-        self.sprites['duck'].callback = lambda: (
-            memory.start(), self.parent.change_level(memory, TransitionAnimation.AnimEnum.fade))
+    def __init__(self):
+        objects = ['bench', 'duck', 'gate', 'path']
+        locations = [Bench(), Duck()]
+        super().__init__('garden', objects, locations)
 
 
-class Bench(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('bench', *args, **kwargs)
-        self.crowbar = self.load_sprite(
-            "items/crowbar", absolute_path=True)
-        self.crowbar.callback = lambda: print("")  # TODO
+class Bench(Location):
+    def __init__(self):
+        objects = []
+        locations = []
+        super().__init__('bench', objects, locations)
+
+
+class Duck(Location):
+    def __init__(self):
+        objects = []
+        locations = []
+        super().__init__('duck', objects, locations)
+
+    def use_item(self, item):
+        if item.name == 'bread':
+            return TriggerMemory('pond_no_face')
+        else:
+            return Nothing()
+
+
+class Bench(Location):
+    def __init__(self):
+        super().__init__('bench', items=[Item('crowbar')])
 
 
 class Kitchen(Location):
-    def __init__(self, *args, **kwargs):
-        super().__init__('kitchen', *args, **kwargs)
-        self.objects = self.load_sprites(
-            ["bin", "breadbox", "fridge", "sink", "kitchen_doors", "freezer", "floorboards"])
-        self.load_closeups(('bin', 'sink'))
-
-        freezer = Freezer(self)
-        self.sprites['freezer'].callback = lambda: self.parent.change_level(
-            'freezer', TransitionAnimation.AnimEnum.swipe)
-
-        breadbox = BreadBox(self)
-        self.sprites['breadbox'].callback = lambda: self.parent.change_level(
-            'breadbox', TransitionAnimation.AnimEnum.swipe)
-
-        floorboards = Floorboards(self)
-        self.sprites['floorboards'].callback = lambda: self.parent.change_level(
-            'floorboards', TransitionAnimation.AnimEnum.swipe)
-
-        kitchen_drawer = KitchenDrawer(self)
-        self.sprites['kitchen_drawer'].callback = lambda: self.parent.change_level(
-            'kitchen_drawer', TransitionAnimation.AnimEnum.swipe)
-
-        self.sprites['kitchen_doors'].callback = lambda: self.parent.change_level(
-            'garden', TransitionAnimation.AnimEnum.swipe)
+    def __init__(self):
+        objects = ["bin", "breadbox", "sink", "kitchen_drawer",
+                   "freezer", "floorboards", "kitchen_doors"]
+        locations = [KitchenDrawer(), Floorboards(), Freezer(), BreadBox()]
+        super().__init__('kitchen', objects, locations)
 
 
-class KitchenDrawer(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('kitchen_drawer', *args, **kwargs)
-        self.walkman = self.load_sprite(
-            "items/walkman", absolute_path=True)
-        self.walkman.callback = lambda: print("")  # TODO
+class KitchenDrawer(Location):
+    def __init__(self):
+        super().__init__('kitchen_drawer', items=[Item('walkman')])
 
 
-class Floorboards(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('floorboards', *args, **kwargs)
-        self.rings = self.load_sprite(
-            "items/rings", absolute_path=True)
-        self.rings.callback = lambda: print("")  # TODO
-        self.key = self.load_sprite(
-            "items/key_floor", absolute_path=True)
-        self.key.callback = lambda: print("")  # TODO
+class Floorboards(Location):
+    def __init__(self):
+        super().__init__('floorboards', items=[
+            Item('rings'), Item('key_floor')])
 
 
-class Freezer(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('freezer', *args, **kwargs)
-        self.postit = self.load_sprite(
-            "items/postit", absolute_path=True)
-        self.postit.callback = lambda: print("")  # TODO
+class Freezer(Location):
+    def __init__(self):
+        super().__init__('freezer', items=[Item('postit')])
 
 
-class BreadBox(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('breadbox', *args, **kwargs)
-        self.bread = self.load_sprite(
-            "items/bread", absolute_path=True)
-        self.bread.callback = lambda: print("")  # TODO
+class BreadBox(Location):
+    def __init__(self):
+        super().__init__('breadbox', items=[Item('bread')])
 
 
 class Bedroom(Location):
-    def __init__(self, *args, **kwargs):
-        super().__init__('bedroom', *args, **kwargs)
-        self.objects = self.load_sprites(["large_drawer"])
-
-        large_drawer = LargeDrawer(self)
-        self.sprites['large_drawer'].callback = lambda: self.parent.change_level(
-            'large_drawer', TransitionAnimation.AnimEnum.swipe)
+    def __init__(self):
+        objects = ['large_drawer']
+        locations = [LargeDrawer()]
+        super().__init__('bedroom', objects, locations)
 
 
-class LargeDrawer(CloseUp):
-    def __init__(self, *args, **kwargs):
-        super().__init__('large_drawer', *args, **kwargs)
-        self.dress = self.load_sprite("items/dress", absolute_path=True)
-        self.dress.callback = lambda: print("")  # TODO
+class LargeDrawer(Location):
+    def __init__(self):
+        super().__init__('large_drawer', items=[Item('dress')])
 
 
-class MainMenu(Location):
-    def __init__(self, hud, *args, **kwargs):
-        super().__init__('main_menu', *args, **kwargs)
-        self.objects = self.load_sprites(["play", "exit"])
-        self.sprites['play'].callback = lambda: (hud.show(), self.parent.change_level(
+class Bedroom(Location):
+    def __init__(self):
+        objects = ["large_drawer"]
+        locations = [LargeDrawer()]
+        super().__init__('bedroom', objects, locations)
+
+
+class MainMenu(LocationView):
+    def __init__(self, parent):
+        location = Location('main_menu', ['play', 'exit'], [])
+        super().__init__(parent, location)
+        self.sprites['play'].callback = lambda: (self.parent.change_level(
             'game'))
         self.sprites['exit'].callback = lambda: self.parent.quit()

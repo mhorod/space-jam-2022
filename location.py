@@ -10,12 +10,45 @@ from assets import Assets
 import copy
 
 
-class Location(Level):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class Location:
+    '''
+    Logical part of the location - represents an area where things can be
+    '''
+
+    def __init__(self, name, objects=None, locations=None, items=None):
+        self.name = name
+        self.objects = objects or []
+        self.items = items or []
+        self.locations = locations or []
+        self.view = None
+
+    def take_item(self, item):
+        '''
+        Take item from this location
+        '''
+        pass
+
+    def use_item(self, item):
+        '''
+        Use item in this location
+        '''
+        pass
+
+
+class LocationView(Level):
+    '''
+    Graphical part of location that can be drawn on the screen
+    '''
+
+    def __init__(self, parent, location: Location):
+        super().__init__(location.name, parent)
         self.background = self.load_image("background")
         self.sprites = {}
         self.close_ups = {}
+        self.location = location
+        self.objects = self.load_sprites(location.objects)
+        self.load_closeups(location.locations)
+        location.view = self
 
     def load_image(self, object_name):
         return Assets.files[self.path(object_name)]
@@ -34,20 +67,20 @@ class Location(Level):
     def load_sprites(self, names):
         return [self.load_sprite(name) for name in names]
 
-    def load_closeups(self, names):
-        for name in names:
-            self.close_ups[name] = CloseUp(name, self)
-            self.sprites[name].callback = (
-                lambda n: lambda: self.parent.change_level(n))(copy.copy(name))
+    def load_closeups(self, locations):
+        for location in locations:
+            self.close_ups[location.name] = CloseUp(self, location)
+            self.sprites[location.name].callback =\
+                (lambda l: lambda: self.parent.change_location(l))(location)
 
 
-class CloseUp(Location):
+class CloseUp(LocationView):
     '''
     Sublocation that is zoomed in on a specific object
     '''
 
-    def __init__(self, name, parent_location):
-        super().__init__(name, parent_location.parent)
+    def __init__(self, parent_location, location):
+        super().__init__(parent_location.parent, location)
         self.back_arrow = self.load_sprite("ui/back_arrow", absolute_path=True)
         self.back_arrow.callback = lambda: parent_location.parent.change_level(
             parent_location)
